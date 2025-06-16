@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 function HomePage() {
   return (
     <>
@@ -92,8 +94,7 @@ function HomePage() {
         <h2>Online Doctor Appointment</h2>
       </div>
       <div className="button-group">
-        {/* Replace with React Router later */}
-        <a href="signup.php" className="menu-button">Get started</a>
+        <Link to="/signup" className="menu-button">Get started</Link>
       </div>
     </>
   );
