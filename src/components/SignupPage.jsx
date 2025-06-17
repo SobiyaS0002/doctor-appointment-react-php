@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
+
 
 function SignupPage() {
   const [formData, setFormData] = useState({
@@ -9,6 +14,8 @@ function SignupPage() {
   });
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -16,22 +23,25 @@ function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost/new-doc/signup.php", {
+    try {
+    const response = await fetch("http://localhost/doctor-backend/signup.php", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
       body: new URLSearchParams(formData).toString()
     });
 
-    const resultText = await response.text();
-    if (resultText.includes("Location:")) {
-      window.location.href = "/login"; // temporary placeholder
-    } else if (resultText.includes("Passwords do not match")) {
-      setMessage({ type: 'error', text: "Passwords do not match!" });
-    } else if (resultText.includes("All fields are required")) {
-      setMessage({ type: 'error', text: "All fields are required!" });
+    if (response.ok) {
+      navigate("/login"); // ✅ Redirects directly
     } else {
-      setMessage({ type: 'error', text: "Signup failed. Check server." });
+      console.log("Signup failed with status:", response.status);
     }
+  } catch (err) {
+    console.error("Error:", err);
+  }
+
+
   };
 
   return (
@@ -111,7 +121,8 @@ function SignupPage() {
         <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
         <input type="password" name="confirm_password" placeholder="Confirm Password" required onChange={handleChange} />
         <input type="submit" value="Sign Up" />
-        <p>Already have an account? <a href="#">Login</a></p>
+        <p>Already have an account? <Link to="/login">Login</Link></p>
+
       </form>
 
       {message.text && (
